@@ -1,7 +1,7 @@
 use clap::Parser;
 use rayon::prelude::*;
 use sha2::{Digest, Sha256};
-use std::{ops::Range, sync::Mutex};
+use std::{ops::Range, sync::Mutex, time::Instant};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -23,8 +23,11 @@ fn main() {
     let mut range: Range<u128> = 0..STEP;
 
     let lines_count: Mutex<usize> = Mutex::new(0);
+
+    let start = Instant::now();
+
     loop {
-        if *lines_count.lock().unwrap() == f {
+        if *lines_count.lock().unwrap() >= f {
             break;
         }
 
@@ -48,6 +51,8 @@ fn main() {
         let end = range.end + STEP;
         range = start..end;
     }
+
+    println!("\n{:?}", start.elapsed());
 }
 
 fn num_to_hash(num: u128) -> String {
